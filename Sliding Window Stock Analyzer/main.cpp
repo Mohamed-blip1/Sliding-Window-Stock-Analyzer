@@ -14,13 +14,12 @@ int main()
     {
         utils::menu();
         std::cout << ">";
-        std::cin >> choice;
+        choice = utils::get_valid_number_from_user();
         switch (choice)
         {
         case 1:
             try
             {
-                // fix timing
                 comp.update_price();
             }
             catch (const std::exception &e)
@@ -32,8 +31,8 @@ int main()
         case 2:
         {
             std::vector<Stats> result;
-            std::cout << "Enter window size:";
-            std::cin >> window_size;
+            std::cout << "Enter window size: ";
+            window_size = utils::get_valid_number_from_user();
             result.reserve(LIMITS_PRICES);
             try
             {
@@ -59,7 +58,6 @@ int main()
         break;
 
         case 4:
-            // fix timing
             comp.clean_old();
             break;
         }
