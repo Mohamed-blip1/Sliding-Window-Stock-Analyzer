@@ -17,9 +17,6 @@ int main()
         choice = utils::get_valid_number_from_user();
         switch (choice)
         {
-        case 0:
-            std::cout << "Goodbye!\n";
-            break;
         case 1:
             try
             {
@@ -30,7 +27,6 @@ int main()
                 std::cout << "Error: " << e.what() << "\n";
             }
             break;
-
         case 2:
         {
             std::vector<Stats> result;
@@ -50,7 +46,6 @@ int main()
             }
         }
         break;
-
         case 3:
         {
             size_t minutes;
@@ -67,12 +62,15 @@ int main()
             }
         }
         break;
-
         case 4:
             comp.clean_old();
+            std::cout << "Success clean up.\n";
+            break;
+        case 0:
+            std::cout << "Exiting program!\n";
             break;
         default:
-            std::cout << "Please enter a valid choice!\n";
+            std::cout << "Invalid choice!\n";
             break;
         }
     } while (choice);

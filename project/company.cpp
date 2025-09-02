@@ -1,10 +1,12 @@
 // company.cpp
 #include <iostream>
+#include <iomanip>
 #include "company.h"
 
 void print(const Stats &stats) noexcept
 {
     std::cout << "\n";
+    std::cout << std::fixed << std::setprecision(2);
     std::cout << "Max: " << stats.max << "\n";
     std::cout << "Min: " << stats.min << "\n";
     std::cout << "Med: " << stats.median << "\n";
@@ -14,17 +16,13 @@ void print(const Stats &stats) noexcept
 Company::Company(std::string name) noexcept
     : company_name_(std::move(name))
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution distrib(MIN_PRICE, MAX_PRICE);
 
     PricePoint point;
     for (size_t i = 0; i < LIMITS_PRICES; ++i)
     {
-        auto now = System_clock::now();
-        point.timestamp = now - Minutes(LIMITS_PRICES - 1 - i);
-        point.price = distrib(gen);
-        prices_.push_back(point);
+        prices_.push_back(
+            {System_clock::now() - Minutes(LIMITS_PRICES - 1 - i),
+             distrib_(gen_)});
     }
 }
 
@@ -88,16 +86,15 @@ void Company::update_price()
     double duration = std::chrono::duration_cast<Minutes>(now - prices_.back().timestamp).count();
 
     if (duration < UPDATE_TIME)
-        throw std::runtime_error("Please wait a few seconds and then reload!");
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution distribut(MIN_PRICE, MAX_PRICE);
+        throw std::runtime_error("Please wait at least 1 minute before update!");
 
     PricePoint point;
-    point.timestamp = System_clock::now();
-    point.price = distribut(gen);
-    prices_.push_back(point);
+    for (size_t i = 0; i < (int)duration; i++)
+    {
+        prices_.push_back(
+            {System_clock::now() - Minutes((int)duration - 1 - i),
+             distrib_(gen_)});
+    }
 }
 
 void Company::clean_old() noexcept
@@ -114,11 +111,7 @@ const std::string &Company::name() const noexcept { return company_name_; }
 
 double Company::compute_median(const std::deque<int> &window) const noexcept
 {
-    std::vector<int> sorted_window;
-    sorted_window.reserve(window.size());
-
-    for (const auto &elem : window)
-        sorted_window.push_back(elem);
+    std::vector<int> sorted_window{window.begin(), window.end()};
     std::sort(sorted_window.begin(), sorted_window.end());
 
     size_t n = sorted_window.size();

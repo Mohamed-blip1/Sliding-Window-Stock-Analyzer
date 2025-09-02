@@ -56,4 +56,6 @@ private:
 private:
     std::string company_name_;
     std::deque<PricePoint> prices_;
+    std::mt19937 gen_{std::random_device{}()};
+    std::uniform_int_distribution<> distrib_{MIN_PRICE, MAX_PRICE};
 };
