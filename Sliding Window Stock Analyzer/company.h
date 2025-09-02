@@ -36,6 +36,10 @@ void print(const Stats &stats) noexcept
 class Company
 {
 public:
+    using System_clock = std::chrono::system_clock;
+    using Minutes = std::chrono::minutes;
+
+public:
     Company() = default;
 
     Company(const std::string &name) noexcept
@@ -48,8 +52,8 @@ public:
         PricePoint point;
         for (size_t i = 0; i < LIMITS_PRICES; ++i)
         {
-            auto now = std::chrono::system_clock::now();
-            point.timestamp = now - std::chrono::minutes(LIMITS_PRICES - 1 - i);
+            auto now = System_clock::now();
+            point.timestamp = now - Minutes(LIMITS_PRICES - 1 - i);
             point.price = distrib(gen);
             prices_.push_back(point);
         }
@@ -62,7 +66,7 @@ public:
         if (prices_.empty())
             throw std::runtime_error("No prices yet!");
         if (window_size > prices_.size())
-            throw std::runtime_error("The current Data only enough for '" + std::to_string(prices_.size()) + "' window size!");
+            throw std::runtime_error("Max window size: '" + std::to_string(prices_.size()) + "'!");
 
         std::vector<Stats> all_stats;
         std::deque<int> window;
@@ -89,8 +93,8 @@ public:
 
     int max_stock_price_in_last_N_minutes(size_t minutes) const noexcept
     {
-        auto now = std::chrono::system_clock::now();
-        auto cutoff = now - std::chrono::minutes(minutes);
+        auto now = System_clock::now();
+        auto cutoff = now - Minutes(minutes);
 
         int max = prices_.back().price;
         for (auto it = prices_.rbegin(); it != prices_.rend(); ++it)
@@ -104,32 +108,26 @@ public:
 
     void update_price()
     {
-        auto now = std::chrono::system_clock::now();
-        double duration = std::chrono::duration_cast<std::chrono::minutes>(now - prices_.back().timestamp).count();
+        auto now = System_clock::now();
+        double duration = std::chrono::duration_cast<Minutes>(now - prices_.back().timestamp).count();
 
         if (duration < UPDATE_TIME)
             throw std::runtime_error("Please wait a few seconds and then reload!");
 
-        if (duration > LIMITS_TIME)
-            duration = LIMITS_TIME;
-
-        PricePoint point;
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution distribut(MIN_PRICE, MAX_PRICE);
-        for (size_t i = 0; i < (int)duration; i++)
-        {
-            auto time = std::chrono::system_clock::now();
-            point.price = distribut(gen);
-            point.timestamp = time - std::chrono::minutes((int)duration - 1 - i);
-            prices_.push_back(point);
-        }
+
+        PricePoint point;
+        point.timestamp = System_clock::now();
+        point.price = distribut(gen);
+        prices_.push_back(point);
     }
 
     void clean_old() noexcept
     {
-        auto now = std::chrono::system_clock::now();
-        auto time_limits = now - std::chrono::minutes(LIMITS_TIME);
+        auto now = System_clock::now();
+        auto time_limits = now - Minutes(LIMITS_TIME);
         while (!prices_.empty() && prices_.front().timestamp < time_limits)
         {
             prices_.pop_front();
@@ -141,7 +139,11 @@ public:
 private:
     double compute_median(const std::deque<int> &window) const noexcept
     {
-        std::deque<int> sorted_window = window;
+        std::vector<int> sorted_window;
+        sorted_window.reserve(window.size());
+
+        for (const auto &elem : window)
+            sorted_window.push_back(elem);
         std::sort(sorted_window.begin(), sorted_window.end());
 
         size_t n = sorted_window.size();
