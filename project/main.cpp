@@ -69,6 +69,14 @@ int main()
         case 0:
             std::cout << "Exiting program!\n";
             break;
+
+            // debuging
+        // case 5:
+        //     comp.print_maxe();
+        //     break;
+        // case 6:
+        //     comp.print_all();
+        //     break;
         default:
             std::cout << "Invalid choice!\n";
             break;

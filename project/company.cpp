@@ -13,16 +13,49 @@ void print(const Stats &stats) noexcept
     std::cout << "Avg: " << stats.average << "\n";
 }
 
+// debuging
+//  void Company::print_maxe() noexcept
+//  {
+
+//     for (size_t i = 0; i < max_prices_.size(); ++i)
+
+//     {
+//         std::cout << "#" << i << "\n";
+//         std::cout << "Price: " << max_prices_[i].price << "\n";
+//         auto t = std::chrono::system_clock::to_time_t(max_prices_[i].timestamp);
+//         std::cout << "Time: " << std::ctime(&t) << " : " << max_prices_[i].price << "\n";
+//     }
+//     std::cout << "\n------size: " << max_prices_.size() << "---------\n";
+// }
+// void Company::print_all() noexcept
+// {
+
+//     for (size_t i = 0; i < prices_.size(); ++i)
+
+//     {
+//         std::cout << "#" << i << "\n";
+//         std::cout << "Price: " << prices_[i].price << "\n";
+//         auto t = std::chrono::system_clock::to_time_t(prices_[i].timestamp);
+//         std::cout << "Time: " << std::ctime(&t) << " : " << prices_[i].price << "\n";
+//     }
+//     std::cout << "\n------size: " << prices_.size() << "---------\n";
+// }
+
 Company::Company(std::string name) noexcept
     : company_name_(std::move(name))
 {
 
-    PricePoint point;
     for (size_t i = 0; i < LIMITS_PRICES; ++i)
     {
-        prices_.push_back(
-            {System_clock::now() - Minutes(LIMITS_PRICES - 1 - i),
-             distrib_(gen_)});
+        auto timestamp = System_clock::now() - Minutes(LIMITS_PRICES - 1 - i);
+        auto price = distrib_(gen_);
+
+        while (!max_prices_.empty() &&
+               price > max_prices_.back().price)
+            max_prices_.pop_back();
+
+        max_prices_.emplace_back(timestamp, price);
+        prices_.emplace_back(timestamp, price);
     }
 }
 
@@ -48,7 +81,7 @@ std::vector<Stats> Company::analyze_with_sliding_window(size_t window_size) cons
 
         if (window.size() == window_size)
         {
-            all_stats.push_back(compute_stats(window, sum));
+            all_stats.emplace_back(compute_stats(window, sum));
 
             sum -= window.front();
             window.pop_front();
@@ -70,14 +103,9 @@ int Company::max_stock_price_in_last_N_minutes(size_t minutes) const
     if (prices_.back().timestamp < cutoff)
         throw std::runtime_error("There is no Data in the last: " + std::to_string(minutes) + " min!");
 
-    int max = prices_.back().price;
-    for (auto it = prices_.rbegin(); it != prices_.rend(); ++it)
-    {
-        if (it->timestamp < cutoff)
-            break;
-        max = std::max(it->price, max);
-    }
-    return max;
+    for (auto it = max_prices_.begin(); it != max_prices_.end(); ++it)
+        if (it->timestamp >= cutoff)
+            return it->price;
 }
 
 void Company::update_price()
@@ -88,12 +116,17 @@ void Company::update_price()
     if (duration < UPDATE_TIME)
         throw std::runtime_error("Please wait at least 1 minute before update!");
 
-    PricePoint point;
-    for (size_t i = 0; i < (int)duration; i++)
+    for (size_t i = (int)duration; i > 0; i--)
     {
-        prices_.push_back(
-            {System_clock::now() - Minutes((int)duration - 1 - i),
-             distrib_(gen_)});
+        auto timestamp = System_clock::now() - Minutes((int)duration - i);
+        auto price = distrib_(gen_);
+
+        while (!max_prices_.empty() &&
+               price > max_prices_.back().price)
+            max_prices_.pop_back();
+
+        max_prices_.emplace_back(timestamp, price);
+        prices_.emplace_back(timestamp, price);
     }
 }
 
@@ -101,10 +134,12 @@ void Company::clean_old() noexcept
 {
     auto now = System_clock::now();
     auto time_limits = now - Minutes(LIMITS_TIME);
+
     while (!prices_.empty() && prices_.front().timestamp < time_limits)
-    {
         prices_.pop_front();
-    }
+
+    while (!max_prices_.empty() && max_prices_.front().timestamp < time_limits)
+        max_prices_.pop_front();
 }
 
 const std::string &Company::name() const noexcept { return company_name_; }
