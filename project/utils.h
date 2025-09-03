@@ -3,6 +3,8 @@
 #include <iostream>
 #include <iomanip>
 
+constexpr int INPUT_BUFFER_SIZE = 1000;
+
 namespace utils
 {
     void menu()
@@ -14,7 +16,7 @@ namespace utils
         std::cout << std::left << std::setw(space) << "2" << "- Sliding window\n";
         std::cout << std::left << std::setw(space) << "3" << "- Max stock price in last N minutes\n";
         std::cout << std::left << std::setw(space) << "4" << "- Clean old prices\n";
-        std::cout << std::left << std::setw(space) << "0" << "- exit\n";
+        std::cout << std::left << std::setw(space) << "0" << "- Exit\n";
     }
 
     size_t get_valid_number_from_user() noexcept
@@ -27,12 +29,12 @@ namespace utils
             if (std::cin.fail())
             {
                 std::cin.clear();
-                std::cin.ignore(1000, '\n');
+                std::cin.ignore(INPUT_BUFFER_SIZE, '\n');
                 std::cout << "\nPlease Enter A Valid Number: ";
             }
             else
             {
-                std::cin.ignore(1000, '\n');
+                std::cin.ignore(INPUT_BUFFER_SIZE, '\n');
                 return number;
             }
         }

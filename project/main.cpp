@@ -17,9 +17,6 @@ int main()
         choice = utils::get_valid_number_from_user();
         switch (choice)
         {
-        case 0:
-            std::cout << "Goodbye!\n";
-            break;
         case 1:
             try
             {
@@ -30,7 +27,6 @@ int main()
                 std::cout << "Error: " << e.what() << "\n";
             }
             break;
-
         case 2:
         {
             std::vector<Stats> result;
@@ -50,7 +46,6 @@ int main()
             }
         }
         break;
-
         case 3:
         {
             size_t minutes;
@@ -58,20 +53,32 @@ int main()
             minutes = utils::get_valid_number_from_user();
             try
             {
-                std::cout << "\nMax stock price in last '" << minutes << "' minutes is: " << comp.max_stock_price_in_last_N_minutes(minutes) << "\n";
+                size_t price = comp.max_stock_price_in_last_N_minutes(minutes);
+                std::cout << "\nMax stock price in last '" << minutes << "' minutes is: " << price << "\n";
             }
             catch (const std::exception &e)
             {
-                std::cout << "Error: " << e.what();
+                std::cout << "Error: " << e.what() << "\n";
             }
         }
         break;
-
         case 4:
             comp.clean_old();
+            std::cout << "Success clean up.\n";
             break;
+        case 0:
+            std::cout << "Exiting program!\n";
+            break;
+
+            // debuging
+        // case 5:
+        //     comp.print_maxe();
+        //     break;
+        // case 6:
+        //     comp.print_all();
+        //     break;
         default:
-            std::cout << "Please enter a valid choice!\n";
+            std::cout << "Invalid choice!\n";
             break;
         }
     } while (choice);

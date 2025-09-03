@@ -40,13 +40,17 @@ public:
 
     std::vector<Stats> analyze_with_sliding_window(size_t window_size) const;
 
-    int max_stock_price_in_last_N_minutes(size_t minutes) const noexcept;
+    int max_stock_price_in_last_N_minutes(size_t minutes) const;
 
     void update_price();
 
     void clean_old() noexcept;
 
     const std::string &name() const noexcept;
+
+    // debuging
+    //  void print_maxe() noexcept;
+    //  void print_all() noexcept;
 
 private:
     double compute_median(const std::deque<int> &window) const noexcept;
@@ -56,4 +60,8 @@ private:
 private:
     std::string company_name_;
     std::deque<PricePoint> prices_;
+    std::deque<PricePoint> max_prices_;
+
+    std::mt19937 gen_{std::random_device{}()};
+    std::uniform_int_distribution<> distrib_{MIN_PRICE, MAX_PRICE};
 };
