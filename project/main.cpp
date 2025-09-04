@@ -8,10 +8,10 @@ int main()
 
     Company comp("My Company");
     size_t window_size;
-    size_t choice;
+    size_t choice = -1;
 
-    std::cout << "======= Sliding Window Stock menu =======\n";
-    do
+    std::cout << "\n======= Sliding Window Stock menu =======\n";
+    while (choice != 0)
     {
         utils::menu();
         choice = utils::get_valid_number_from_user();
@@ -32,13 +32,16 @@ int main()
             std::vector<Stats> result;
             std::cout << "Enter window size: ";
             window_size = utils::get_valid_number_from_user();
-            result.reserve(LIMITS_PRICES);
             try
             {
                 result = comp.analyze_with_sliding_window(window_size);
                 std::cout << "\n-----" << comp.name() << "-----\n";
+                size_t i = 0;
                 for (const auto &stats : result)
-                    print(stats);
+                {
+                    std::cout << "Window #" << ++i << ":\n";
+                    print_stats(stats);
+                }
             }
             catch (const std::exception &e)
             {
@@ -81,7 +84,7 @@ int main()
             std::cout << "Invalid choice!\n";
             break;
         }
-    } while (choice);
+    }
 
     return 0;
 }

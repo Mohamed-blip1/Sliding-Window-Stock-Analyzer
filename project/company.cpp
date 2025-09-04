@@ -3,7 +3,7 @@
 #include <iomanip>
 #include "company.h"
 
-void print(const Stats &stats) noexcept
+void print_stats(const Stats &stats) noexcept
 {
     std::cout << "\n";
     std::cout << std::fixed << std::setprecision(2);
@@ -14,11 +14,9 @@ void print(const Stats &stats) noexcept
 }
 
 // debuging
-//  void Company::print_maxe() noexcept
-//  {
-
+// void Company::print_maxe() noexcept
+// {
 //     for (size_t i = 0; i < max_prices_.size(); ++i)
-
 //     {
 //         std::cout << "#" << i << "\n";
 //         std::cout << "Price: " << max_prices_[i].price << "\n";
@@ -29,7 +27,6 @@ void print(const Stats &stats) noexcept
 // }
 // void Company::print_all() noexcept
 // {
-
 //     for (size_t i = 0; i < prices_.size(); ++i)
 
 //     {
@@ -41,10 +38,10 @@ void print(const Stats &stats) noexcept
 //     std::cout << "\n------size: " << prices_.size() << "---------\n";
 // }
 
+// feed prices
 Company::Company(std::string name) noexcept
     : company_name_(std::move(name))
 {
-
     for (size_t i = 0; i < LIMITS_PRICES; ++i)
     {
         auto timestamp = System_clock::now() - Minutes(LIMITS_PRICES - 1 - i);
@@ -70,9 +67,10 @@ std::vector<Stats> Company::analyze_with_sliding_window(size_t window_size) cons
 
     std::vector<Stats> all_stats;
     std::deque<int> window;
-    double sum = 0;
     int current_price;
+    double sum = 0;
 
+    all_stats.reserve(prices_.size() - window_size + 1);
     for (size_t i = 0; i < prices_.size(); i++)
     {
         current_price = prices_[i].price;
@@ -93,7 +91,6 @@ std::vector<Stats> Company::analyze_with_sliding_window(size_t window_size) cons
 
 int Company::max_stock_price_in_last_N_minutes(size_t minutes) const
 {
-
     if (prices_.empty())
         throw std::runtime_error("No prices yet!");
 
@@ -103,30 +100,35 @@ int Company::max_stock_price_in_last_N_minutes(size_t minutes) const
     if (prices_.back().timestamp < cutoff)
         throw std::runtime_error("There is no Data in the last: " + std::to_string(minutes) + " min!");
 
-    for (auto it = max_prices_.begin(); it != max_prices_.end(); ++it)
-        if (it->timestamp >= cutoff)
+    for (auto it = max_prices_.rbegin(); it != max_prices_.rend(); ++it)
+        if (it->timestamp >= cutoff) // if 'timestamp' equal or newar to minutes
             return it->price;
+
+    throw std::runtime_error("No data found in time range!");
 }
 
 void Company::update_price()
 {
     auto now = System_clock::now();
-    double duration = std::chrono::duration_cast<Minutes>(now - prices_.back().timestamp).count();
+    int duration = static_cast<int>(std::chrono::duration_cast<Minutes>(now - prices_.back().timestamp).count());
 
     if (duration < UPDATE_TIME)
         throw std::runtime_error("Please wait at least 1 minute before update!");
 
-    for (size_t i = (int)duration; i > 0; i--)
+    if (duration > LIMITS_TIME)
+        duration = LIMITS_TIME;
+
+    for (size_t i = duration; i > 0; i--)
     {
-        auto timestamp = System_clock::now() - Minutes((int)duration - i);
+        auto timestamp = System_clock::now() - Minutes(duration - i);
         auto price = distrib_(gen_);
 
         while (!max_prices_.empty() &&
                price > max_prices_.back().price)
             max_prices_.pop_back();
 
-        max_prices_.emplace_back(timestamp, price);
-        prices_.emplace_back(timestamp, price);
+        max_prices_.push_back({timestamp, price});
+        prices_.push_back({timestamp, price});
     }
 }
 
@@ -148,12 +150,12 @@ double Company::compute_median(const std::deque<int> &window) const noexcept
 {
     std::vector<int> sorted_window{window.begin(), window.end()};
     std::sort(sorted_window.begin(), sorted_window.end());
-
     size_t n = sorted_window.size();
-    if (n % 2 == 0)
-        return (sorted_window[(n / 2) - 1] + sorted_window[n / 2]) / 2.0;
-    else
+
+    if (n % 2 != 0)
         return sorted_window[n / 2];
+    else
+        return (sorted_window[n / 2] + sorted_window[(n / 2) - 1]) / 2.0;
 }
 
 Stats Company::compute_stats(const std::deque<int> &window, double sum) const noexcept
