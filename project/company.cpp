@@ -1,11 +1,10 @@
 // company.cpp
+#include "company.h"
 #include <iostream>
 #include <iomanip>
-#include "company.h"
 
 void print_stats(const Stats &stats) noexcept
 {
-    std::cout << "\n";
     std::cout << std::fixed << std::setprecision(2);
     std::cout << "Max: " << stats.max << "\n";
     std::cout << "Min: " << stats.min << "\n";
@@ -71,7 +70,7 @@ std::vector<Stats> Company::analyze_with_sliding_window(size_t window_size) cons
     double sum = 0;
 
     all_stats.reserve(prices_.size() - window_size + 1);
-    for (size_t i = 0; i < prices_.size(); i++)
+    for (size_t i = 0; i < prices_.size(); ++i)
     {
         current_price = prices_[i].price;
         sum += current_price;
@@ -107,29 +106,26 @@ int Company::max_stock_price_in_last_N_minutes(size_t minutes) const
     throw std::runtime_error("No data found in time range!");
 }
 
-void Company::update_price()
+int Company::update_time_check() const noexcept
 {
     auto now = System_clock::now();
     int duration = static_cast<int>(std::chrono::duration_cast<Minutes>(now - prices_.back().timestamp).count());
-
     if (duration < UPDATE_TIME)
-        throw std::runtime_error("Please wait at least 1 minute before update!");
+        return ONE_MINUTE_NOT_PASED;
 
+    return duration;
+}
+
+void Company::update_price(int duration) noexcept
+{
     if (duration > LIMITS_TIME)
         duration = LIMITS_TIME;
 
-    for (size_t i = duration; i > 0; i--)
-    {
-        auto timestamp = System_clock::now() - Minutes(duration - i);
-        auto price = distrib_(gen_);
+    auto timestamp = System_clock::now();
+    auto price = distrib_(gen_);
 
-        while (!max_prices_.empty() &&
-               price > max_prices_.back().price)
-            max_prices_.pop_back();
-
-        max_prices_.push_back({timestamp, price});
-        prices_.push_back({timestamp, price});
-    }
+    max_prices_.emplace_back(timestamp, price);
+    prices_.emplace_back(timestamp, price);
 }
 
 void Company::clean_old() noexcept
@@ -137,14 +133,18 @@ void Company::clean_old() noexcept
     auto now = System_clock::now();
     auto time_limits = now - Minutes(LIMITS_TIME);
 
-    while (!prices_.empty() && prices_.front().timestamp < time_limits)
+    // Let 1 price for sorting in companies.(cpp/h)
+    while (prices_.size() > 1 && prices_.front().timestamp < time_limits)
         prices_.pop_front();
 
-    while (!max_prices_.empty() && max_prices_.front().timestamp < time_limits)
+    while (max_prices_.size() > 1 && max_prices_.front().timestamp < time_limits)
         max_prices_.pop_front();
 }
 
-const std::string &Company::name() const noexcept { return company_name_; }
+const std::string &Company::get_name() const noexcept { return company_name_; }
+void Company::set_name(const std::string &new_name) noexcept { company_name_ = new_name; }
+
+const PricePoint Company::get_last_price() const noexcept { return prices_.back(); };
 
 double Company::compute_median(const std::deque<int> &window) const noexcept
 {
