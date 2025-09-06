@@ -1,23 +1,26 @@
+#pragma once
 // company.h
-#include <iostream>
-#include <vector>
-#include <deque>
-#include <random>
 #include <algorithm>
 #include <chrono>
+#include <random>
+#include <vector>
+#include <deque>
 
-constexpr size_t LIMITS_PRICES = 15; // Max feed price at the beginning
-constexpr size_t UPDATE_TIME = 1;    // Minute. in update_price()
-constexpr size_t LIMITS_TIME = 15;   // clean_old() than 15 minutes
-constexpr int MIN_PRICE = 100;       // Minimum price
-constexpr int MAX_PRICE = 300;       // Maximum
+constexpr const int ONE_MINUTE_NOT_PASED = -1; // Should whait one minute at least befor update
+constexpr const size_t LIMITS_PRICES = 15;     // Max feed price at the beginning
+constexpr const size_t UPDATE_TIME = 1;        // Minute. in update_price()
+constexpr const size_t LIMITS_TIME = 15;       // clean_old() than 15 minutes
+constexpr const int MIN_PRICE = 100;           // Minimum price
+constexpr const int MAX_PRICE = 300;           // Maximum
 
 struct PricePoint // Store the price and time
 {
-    std::chrono::system_clock::time_point timestamp;
+    using Time_point = std::chrono::system_clock::time_point;
+
+    Time_point timestamp;
     int price;
 
-    PricePoint(std::chrono::system_clock::time_point tp, int p) noexcept
+    PricePoint(Time_point tp, int p) noexcept
         : timestamp(tp), price(p) {}
 };
 struct Stats // Store stats of the window
@@ -43,6 +46,8 @@ public:
     // construct the company with its name
     Company(std::string name) noexcept;
 
+    // Company(const Company &other) noexcept;
+
     // Analyze and get the stats of every window with a User-selected window size using a sliding window technique
     [[nodiscard]] std::vector<Stats> analyze_with_sliding_window(size_t window_size) const;
 
@@ -50,13 +55,18 @@ public:
     [[nodiscard]] int max_stock_price_in_last_N_minutes(size_t minutes) const;
 
     // Update price + Get the missing updated prices
-    void update_price();
+    [[nodiscard]] int update_time_check() const noexcept;
+    void update_price(int duration) noexcept;
 
     // Clean up prices older than LIMITS_TIME (15 min)
     void clean_old() noexcept;
 
     // Get company name
-    const std::string &name() const noexcept;
+    const std::string &get_name() const noexcept;
+
+    void set_name(const std::string &new_name) noexcept;
+
+    const PricePoint get_last_price() const noexcept;
 
     // debuging
     // void print_maxe() noexcept;

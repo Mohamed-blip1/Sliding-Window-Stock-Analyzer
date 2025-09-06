@@ -1,11 +1,11 @@
 // main.cpp
 #include <iostream>
-#include "company.h"
+#include "companies.h"
 #include "utils.h"
 
 int main()
 {
-
+    Companies all;
     Company comp("My Company");
     size_t window_size;
     size_t choice = -1;
@@ -39,7 +39,7 @@ int main()
                 size_t i = 0;
                 for (const auto &stats : result)
                 {
-                    std::cout << "Window #" << ++i << ":\n";
+                    std::cout << "\nWindow #" << ++i << ":\n";
                     print_stats(stats);
                 }
             }
@@ -80,6 +80,18 @@ int main()
         // case 6:
         //     comp.print_all();
         //     break;
+        case 9:
+        {
+            std::string name = utils::get_valid_string_from_user("Enter company name:");
+            if (!all.add_company(name))
+                std::cout << "Company already exist!\n";
+            break;
+        }
+        case 10:
+        {
+            all.show_companies();
+            break;
+        }
         default:
             std::cout << "Invalid choice!\n";
             break;
