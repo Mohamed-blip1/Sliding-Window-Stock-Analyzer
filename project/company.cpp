@@ -38,21 +38,22 @@ void print_stats(const Stats &stats) noexcept
 // }
 
 // feed prices
-Company::Company(std::string name) noexcept
+Company::Company(std::string name, bool feed_initial) noexcept
     : company_name_(std::move(name))
 {
-    for (size_t i = 0; i < LIMITS_PRICES; ++i)
-    {
-        auto timestamp = System_clock::now() - Minutes(LIMITS_PRICES - 1 - i);
-        auto price = distrib_(gen_);
+    if (feed_initial)
+        for (size_t i = 0; i < LIMITS_PRICES; ++i)
+        {
+            auto timestamp = System_clock::now() - Minutes(LIMITS_PRICES - 1 - i);
+            auto price = distrib_(gen_);
 
-        while (!max_prices_.empty() &&
-               price > max_prices_.back().price)
-            max_prices_.pop_back();
+            while (!max_prices_.empty() &&
+                   price > max_prices_.back().price)
+                max_prices_.pop_back();
 
-        max_prices_.emplace_back(timestamp, price);
-        prices_.emplace_back(timestamp, price);
-    }
+            max_prices_.emplace_back(timestamp, price);
+            prices_.emplace_back(timestamp, price);
+        }
 }
 
 std::vector<Stats> Company::analyze_with_sliding_window(size_t window_size) const
@@ -99,7 +100,7 @@ int Company::max_stock_price_in_last_N_minutes(size_t minutes) const
     if (prices_.back().timestamp < cutoff)
         throw std::runtime_error("There is no Data in the last: " + std::to_string(minutes) + " min!");
 
-    for (auto it = max_prices_.rbegin(); it != max_prices_.rend(); ++it)
+    for (auto it = max_prices_.begin(); it != max_prices_.end(); ++it)
         if (it->timestamp >= cutoff) // if 'timestamp' equal or newar to minutes
             return it->price;
 
@@ -109,20 +110,24 @@ int Company::max_stock_price_in_last_N_minutes(size_t minutes) const
 int Company::update_time_check() const noexcept
 {
     auto now = System_clock::now();
+    // shold get fixed with not feeding at the beginig
+    if (prices_.empty())
+        return ONE_MINUTE_NOT_PASSED;
+
     int duration = static_cast<int>(std::chrono::duration_cast<Minutes>(now - prices_.back().timestamp).count());
     if (duration < UPDATE_TIME)
-        return ONE_MINUTE_NOT_PASED;
+        return ONE_MINUTE_NOT_PASSED;
 
     return duration;
 }
 
-void Company::update_price(int duration) noexcept
+void Company::update_price() noexcept
 {
-    if (duration > LIMITS_TIME)
-        duration = LIMITS_TIME;
-
     auto timestamp = System_clock::now();
     auto price = distrib_(gen_);
+
+    while (!max_prices_.empty() && price > max_prices_.back().price)
+        max_prices_.pop_back();
 
     max_prices_.emplace_back(timestamp, price);
     prices_.emplace_back(timestamp, price);
@@ -144,7 +149,7 @@ void Company::clean_old() noexcept
 const std::string &Company::get_name() const noexcept { return company_name_; }
 void Company::set_name(const std::string &new_name) noexcept { company_name_ = new_name; }
 
-const PricePoint Company::get_last_price() const noexcept { return prices_.back(); };
+PricePoint &Company::get_last_price() noexcept { return prices_.back(); };
 
 double Company::compute_median(const std::deque<int> &window) const noexcept
 {
