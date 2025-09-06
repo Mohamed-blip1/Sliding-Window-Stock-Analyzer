@@ -3,9 +3,7 @@
 
 bool Companies::check_existing(const std::string &name) const noexcept
 {
-    if (companies_.count(name))
-        return true;
-    return false;
+    return companies_.count(name) > 0;
 }
 
 bool Companies::add_company(const std::string &name) noexcept
@@ -13,8 +11,7 @@ bool Companies::add_company(const std::string &name) noexcept
     if (check_existing(name)) // If already exist
         return false;
 
-    Company comp(name);
-    auto ptr = std::make_shared<Company>(comp);
+    auto ptr = std::make_shared<Company>(name, true);
 
     // Store companies sorted by last price
     auto it = sorted_company_by_last_price.lower_bound(ptr);
@@ -69,12 +66,12 @@ bool Companies::update_order(const Company_ptr &ptr) noexcept
 {
     // Check if the period has passed
     int duration = ptr->update_time_check();
-    if (duration == ONE_MINUTE_NOT_PASED)
+    if (duration == ONE_MINUTE_NOT_PASSED)
         return false;
 
     // Erase, update_price and reinsert
     sorted_company_by_last_price.erase(ptr);
-    ptr->update_price(duration);
+    ptr->update_price();
     sorted_company_by_last_price.insert(ptr);
 
     return true;

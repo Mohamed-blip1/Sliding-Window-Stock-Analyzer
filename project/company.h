@@ -1,19 +1,21 @@
 #pragma once
-// company.h
+// company.h : Represents a single company with its stock prices and statistics
 #include <algorithm>
 #include <chrono>
 #include <random>
 #include <vector>
 #include <deque>
 
-constexpr const int ONE_MINUTE_NOT_PASED = -1; // Should whait one minute at least befor update
-constexpr const size_t LIMITS_PRICES = 15;     // Max feed price at the beginning
-constexpr const size_t UPDATE_TIME = 1;        // Minute. in update_price()
-constexpr const size_t LIMITS_TIME = 15;       // clean_old() than 15 minutes
-constexpr const int MIN_PRICE = 100;           // Minimum price
-constexpr const int MAX_PRICE = 300;           // Maximum
+// Status codes and constraints
+constexpr const int ONE_MINUTE_NOT_PASSED = -1; // Returned if update is attempted too soon
+constexpr const size_t LIMITS_PRICES = 15;      // Initial number of random prices to seed a company
+constexpr const size_t UPDATE_TIME = 1;         // Required time (minutes) between updates
+constexpr const size_t LIMITS_TIME = 15;        // Keep only data from the last 15 minutes
+constexpr const int MIN_PRICE = 100;            // Min simulated stock price
+constexpr const int MAX_PRICE = 300;            // Max simulated stock price
 
-struct PricePoint // Store the price and time
+// Represents a single price point with timestamp
+struct PricePoint
 {
     using Time_point = std::chrono::system_clock::time_point;
 
@@ -23,18 +25,21 @@ struct PricePoint // Store the price and time
     PricePoint(Time_point tp, int p) noexcept
         : timestamp(tp), price(p) {}
 };
-struct Stats // Store stats of the window
+
+// Holds statistics of a price window
+struct Stats
 {
-    int max;        // Maximum value
-    int min;        // Minimum ...
-    double median;  //...
-    double average; //...
+    int max;
+    int min;
+    double median;
+    double average;
 };
 
-// Print stats of each window
+// Print a Stats object to console
 void print_stats(const Stats &stats) noexcept;
 
-class Company // Data of a company
+// Represents a single company's stock data
+class Company
 {
 public:
     using System_clock = std::chrono::system_clock;
@@ -43,48 +48,45 @@ public:
 public:
     Company() = default;
 
-    // construct the company with its name
-    Company(std::string name) noexcept;
+    // Construct a company with its name and seed with LIMITS_PRICES initial prices
+    explicit Company(std::string name, bool feed_initial = true) noexcept;
 
-    // Company(const Company &other) noexcept;
-
-    // Analyze and get the stats of every window with a User-selected window size using a sliding window technique
+    // Analyze stock prices with a sliding window of given size
     [[nodiscard]] std::vector<Stats> analyze_with_sliding_window(size_t window_size) const;
 
-    // Get max stock price with a User-selected period
+    // Return the maximum stock price observed in the last N minutes
     [[nodiscard]] int max_stock_price_in_last_N_minutes(size_t minutes) const;
 
-    // Update price + Get the missing updated prices
+    // Check how many minutes passed since last update
+    // Returns ONE_MINUTE_NOT_PASSED if less than UPDATE_TIME minutes
     [[nodiscard]] int update_time_check() const noexcept;
-    void update_price(int duration) noexcept;
 
-    // Clean up prices older than LIMITS_TIME (15 min)
+    // Insert a new stock price with current timestamp
+    void update_price() noexcept;
+
+    // Remove old price points older than LIMITS_TIME
     void clean_old() noexcept;
 
-    // Get company name
+    // Get / set company name
     const std::string &get_name() const noexcept;
-
     void set_name(const std::string &new_name) noexcept;
 
-    const PricePoint get_last_price() const noexcept;
-
-    // debuging
-    // void print_maxe() noexcept;
-    // void print_all() noexcept;
+    // Access the last recorded price
+    PricePoint &get_last_price() noexcept;
 
 private:
-    // Culculate the median of a window
+    // Compute median of a window
     double compute_median(const std::deque<int> &window) const noexcept;
 
-    // Culculate the all stats(max,min,median->{using: compute_median()},average)
+    // Compute full statistics (max, min, median, average) of a window
     Stats compute_stats(const std::deque<int> &window, double sum) const noexcept;
 
 private:
-    std::string company_name_;
-    std::deque<PricePoint> prices_;     // Store all company prices
-    std::deque<PricePoint> max_prices_; // Store max values for fast access
+    std::string company_name_;          // Company name
+    std::deque<PricePoint> prices_;     // All stock prices
+    std::deque<PricePoint> max_prices_; // Max prices for fast retrieval
 
-    // Random number generator
+    // Random number generator for simulated prices
     std::mt19937 gen_{std::random_device{}()};
     std::uniform_int_distribution<> distrib_{MIN_PRICE, MAX_PRICE};
 };
