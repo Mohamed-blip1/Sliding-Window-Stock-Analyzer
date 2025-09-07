@@ -1,3 +1,7 @@
+//  Run (in terminal): cd path (...\Sliding-Window-Stock-Analyzer\project)
+//                     then: g++ -std=c++17 main.cpp menu.cpp companies.cpp company.cpp utils.cpp -o main.exe
+/*                                       \ or your compaler version                                     \ or name it somthing else      */
+//                     then: ./main.exe
 // main.cpp : Entry point for Sliding Window Stock program
 #include <iostream>
 #include "menu.h"

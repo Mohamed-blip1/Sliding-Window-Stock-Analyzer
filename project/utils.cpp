@@ -34,8 +34,8 @@ namespace utils
 
         std::cout << "\nMenu:\n";
         std::cout << std::left << std::setw(space) << "1" << "- Reload prices\n";
-        std::cout << std::left << std::setw(space) << "2" << "- Sliding window\n";
-        std::cout << std::left << std::setw(space) << "3" << "- Max stock price in last N minutes\n";
+        std::cout << std::left << std::setw(space) << "2" << "- Analyze with sliding window\n";
+        std::cout << std::left << std::setw(space) << "3" << "- Max price in last N minutes\n";
         std::cout << std::left << std::setw(space) << "4" << "- Clean old prices\n";
         std::cout << std::left << std::setw(space) << "5" << "- Rename a company\n";
         std::cout << std::left << std::setw(space) << "9" << "- Menu\n";

@@ -48,7 +48,7 @@ void run_menu(Companies &all, Company_ptr &ptr)
             num = utils::get_valid_number_from_user();
             try
             {
-                size_t price = ptr->max_stock_price_in_last_N_minutes(num);
+                size_t price = ptr->max_price_in_last_N_minutes(num);
                 std::cout << "\nMax stock price in last '" << num << "' minutes is: " << price << "\n";
             }
             catch (const std::exception &e)
@@ -74,10 +74,10 @@ void run_menu(Companies &all, Company_ptr &ptr)
             break;
 
             // debuging
-            // case 5:
+            // case 6:
             //     ptr->print_maxe();
             //     break;
-            // case 6:
+            // case 7:
             //     ptr->print_all();
             //     break;
 

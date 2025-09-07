@@ -89,7 +89,7 @@ std::vector<Stats> Company::analyze_with_sliding_window(size_t window_size) cons
     return all_stats;
 }
 
-int Company::max_stock_price_in_last_N_minutes(size_t minutes) const
+int Company::max_price_in_last_N_minutes(size_t minutes) const
 {
     if (prices_.empty())
         throw std::runtime_error("No prices yet!");

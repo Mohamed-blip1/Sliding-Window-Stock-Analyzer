@@ -55,7 +55,7 @@ public:
     [[nodiscard]] std::vector<Stats> analyze_with_sliding_window(size_t window_size) const;
 
     // Return the maximum stock price observed in the last N minutes
-    [[nodiscard]] int max_stock_price_in_last_N_minutes(size_t minutes) const;
+    [[nodiscard]] int max_price_in_last_N_minutes(size_t minutes) const;
 
     // Check how many minutes passed since last update
     // Returns ONE_MINUTE_NOT_PASSED if less than UPDATE_TIME minutes
