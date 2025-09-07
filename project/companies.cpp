@@ -25,7 +25,7 @@ bool Companies::add_company(const std::string &name) noexcept
 
 bool Companies::rename_company(const Company_ptr &ptr, const std::string &new_name) noexcept
 {
-    if (!check_existing(ptr->get_name())) // If not exist
+    if (check_existing(ptr->get_name())) // If not exist
         return false;
 
     // Erase then insert with new key
