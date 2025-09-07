@@ -1,96 +1,68 @@
-# 📈 Sliding Window Stock Analyzer
+# Sliding Window Stock Analyzer
 
-A C++ console application that simulates stock price tracking and performs real-time statistical analysis using a sliding window.
-
----
-
-## 🚀 Features
-
-- Simulates random stock prices over time
-- Calculates:
-  - Maximum
-  - Minimum
-  - Median
-  - Average
-- Supports sliding window analysis over any given window size
-- Finds maximum stock price in the last **N minutes**
-- Cleans old price data to limit memory usage
-- Input validation and error handling
+A C++ program that simulates stock price updates and provides statistical analysis using a **sliding window** technique.  
+It can compute maximum, minimum, median, and average stock prices over a user-defined time window.
 
 ---
 
-## 🛠️ Technologies
-
-- **C++17**
-- Standard Library (`<chrono>`, `<deque>`, `<vector>`, `<random>`, etc.)
-- Command-line interface (CLI)
+## Features
+- 📈 Simulate stock price updates with random values.
+- ⏳ Analyze stock prices over sliding windows of customizable size.
+- 🔎 Query the maximum stock price within the last **N minutes**.
+- 🧹 clean up prices older than a defined limit.
+- 📝 Rename companies and manage multiple companies interactively.
 
 ---
 
-## 📦 How to Compile
+## Project Structure
+```
 
-Make sure you have `g++` installed.
-
-```bash
-g++ -std=c++17 main.cpp company.cpp -o analyzer.exe
+project/
+├── main.cpp        # Entry point
+├── menu.cpp/.h     # Menu logic (user interaction)
+├── company.cpp/.h  # Company class and stock logic
+├── companies.cpp/.h# Container for multiple companies
+├── utils.cpp/.h    # Helper functions (input, menus, trimming, etc.)
 
 ````
 
-Then run:
+---
 
-```
-./analyzer.exe
+## Build Instructions
 
-```
+### Prerequisites
+- A C++17 (or later) compiler (e.g. `g++`, `clang++`, MSVC).
+- A terminal or shell.
+
+### Compile & Run
+```bash
+# Navigate to project directory
+cd path/to/Sliding-Window-Stock-Analyzer/project
+
+# Compile (example with g++)
+g++ -std=c++17 main.cpp menu.cpp companies.cpp company.cpp utils.cpp -o main.exe
+
+# Run
+./main.exe   # (Linux/macOS)
+main.exe     # (Windows)
+````
 
 ---
 
-## 📋 Menu Example
+## Example Usage
 
-```
-======= Sliding Window Stock menu =======
-Menu:
-1 - Reload prices
-2 - Sliding window
-3 - Max stock price in last N minutes
-4 - Clean old prices
-0 - Exit
+Once running, you’ll see a menu with options like:
 
-```
-
----
-
-## 🧪 Sample Output
-
-```
-Enter window size: 5
-
------My Company-----
-Max: 287
-Min: 110
-Med: 190
-Avg: 185.6
-...
-
-```
+* Add a company
+* Enter a company
+* Analyze with sliding window
+* Query max price in last N minutes
+* Clean old prices
+* Rename company
+* Exit
 
 ---
 
-## 📁 Project Structure
+## License
 
-```
-.
-├── main.cpp
-├── company.cpp
-├── company.h
-├── utils.h
-└── README.md
-
-```
----
-
-## 🧑‍💻 Author
-
-**Mohamed-blip1**
-
-Feel free to connect or contribute!
+MIT License — free to use and modify.
