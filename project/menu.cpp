@@ -4,6 +4,7 @@
 void run_menu(Companies &all, Company_ptr &ptr)
 {
     size_t choice = std::numeric_limits<size_t>::max();
+    std::vector<Stats> result;
     std::string new_name;
     size_t num;
 
@@ -20,18 +21,16 @@ void run_menu(Companies &all, Company_ptr &ptr)
             break;
 
         case 2:
-        {
-            std::vector<Stats> result;
             std::cout << "Enter window size: ";
             num = utils::get_valid_number_from_user();
             try
             {
                 result = ptr->analyze_with_sliding_window(num);
                 std::cout << "\n-----" << ptr->get_name() << "-----\n";
-                size_t i = 0;
+                num = 0;
                 for (const auto &stats : result)
                 {
-                    std::cout << "\nWindow #" << ++i << ":\n";
+                    std::cout << "\nWindow #" << ++num << ":\n";
                     print_stats(stats);
                 }
                 std::cout << "\n";
@@ -40,8 +39,8 @@ void run_menu(Companies &all, Company_ptr &ptr)
             {
                 std::cout << "Error: " << e.what() << "\n";
             }
-        }
-        break;
+
+            break;
 
         case 3:
 
