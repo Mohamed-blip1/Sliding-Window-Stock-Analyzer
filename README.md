@@ -16,14 +16,25 @@ It can compute maximum, minimum, median, and average stock prices over a user-de
 
 ## Project Structure
 ```
-
+📁 Project Structure
 project/
-├── main.cpp        # Entry point
-├── menu.cpp/.h     # Menu logic (user interaction)
-├── company.cpp/.h  # Company class and stock logic
-├── companies.cpp/.h# Container for multiple companies
-├── utils.cpp/.h    # Helper functions (input, menus, trimming, etc.)
+├── .gitignore
+├── README.md                 # This file
+└── Social_Network_Mini/
+    ├── include/              # Header files
+    │   ├── companies.h       
+    │   ├── company.h.h       
+    │   ├── menu.h            
+    │   └── utils.h           # Utilities
 
+    ├── src/                  # Source files
+    │   ├── companies.cpp
+    │   ├── company.cpp
+    │   ├── menu.cpp
+    │   └── utils.cpp
+
+    ├── main.cpp              # Program entry point
+    └── Makefile              # Build configuration
 ````
 
 ---
