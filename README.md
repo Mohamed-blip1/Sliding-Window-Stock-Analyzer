@@ -71,15 +71,16 @@ main.exe     # (Windows)
 ## Example Usage
 
 Once running, you’ll see a menu with options like:
-
-* Add a company
-* Enter a company
-* Analyze with sliding window
-* Query max price in last N minutes
-* Clean old prices
-* Rename company
-* Exit
-
+```
+Menu:
+1  - Add company
+2  - Enter company
+3  - Companies suggestions
+4  - Delete Company
+9  - Menu
+0  - Exit
+>
+```
 ---
 
 ## License
