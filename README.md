@@ -45,13 +45,21 @@ project/
 - A C++17 (or later) compiler (e.g. `g++`, `clang++`, MSVC).
 - A terminal or shell.
 
+
 ### Compile & Run
-```bash
+
 # Navigate to project directory
 cd path/to/Sliding-Window-Stock-Analyzer/project
 
+⚙️Option 1:
+```
+make
+```
+⚙️Option 2:
+```bash
+
 # Compile (example with g++)
-g++ -std=c++17 main.cpp menu.cpp companies.cpp company.cpp utils.cpp -o main.exe
+g++ -std=c++17 -Iinclude -Isrc src/*.cpp main.cpp -o main.exe
 
 # Run
 ./main.exe   # (Linux/macOS)
