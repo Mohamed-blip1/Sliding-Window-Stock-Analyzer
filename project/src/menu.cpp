@@ -89,5 +89,6 @@ void run_menu(Companies &all, Company_ptr &ptr)
             std::cout << "Invalid choice!\n";
             break;
         }
+        std::cout << "To show menu press [9]\n";
     }
 }

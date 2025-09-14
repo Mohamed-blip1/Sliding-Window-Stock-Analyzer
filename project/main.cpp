@@ -28,6 +28,8 @@ int main()
             name = utils::get_valid_string_from_user("Enter company name:");
             if (!all.add_company(name))
                 std::cout << "Company already exists!\n";
+            else
+                std::cout << "Success.\n";
             break;
 
         case 2:
@@ -80,6 +82,7 @@ int main()
             std::cout << "Invalid choice!\n";
             break;
         }
+        std::cout << "To show menu press [9]\n";
     }
     return 0;
 }
