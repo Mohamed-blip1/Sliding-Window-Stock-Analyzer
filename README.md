@@ -47,10 +47,10 @@ project/
 
 
 ### Compile & Run
-``
+```
 # Navigate to project directory
 cd path/to/Sliding-Window-Stock-Analyzer/project
-``
+```
 ⚙️Option 1:
 ```
 make
