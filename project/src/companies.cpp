@@ -25,7 +25,7 @@ bool Companies::add_company(const std::string &name) noexcept
 
 bool Companies::rename_company(const Company_ptr &ptr, const std::string &new_name) noexcept
 {
-    if (check_existing(ptr->get_name())) // If not exist
+    if (!check_existing(ptr->get_name())) // If not exist
         return false;
 
     // Erase then insert with new key
@@ -62,7 +62,7 @@ const Company_ptr &Companies::enter_company(const std::string &name) const
     return it->second;
 }
 
-bool Companies::update_order(const Company_ptr &ptr) noexcept
+bool Companies::update(const Company_ptr &ptr) noexcept
 {
     // Check if the period has passed
     int duration = ptr->update_time_check();

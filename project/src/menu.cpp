@@ -3,26 +3,35 @@
 
 void run_menu(Companies &all, Company_ptr &ptr)
 {
-    size_t choice = std::numeric_limits<size_t>::max();
     std::vector<Stats> result;
     std::string new_name;
     size_t num;
 
+    CompanyMenu choice;
     utils::Company_menu();
-    while (choice != 0)
+    while (true)
     {
-        choice = utils::get_valid_number_from_user();
+        choice = static_cast<CompanyMenu>(utils::get_number(0, 6,"Enter a choice ([6] menu) >"));
         switch (choice)
         {
-        case 1:
-            if (!all.update_order(ptr))
+
+        case CompanyMenu::Exit:
+
+            std::cout << "Exiting company!\n";
+            break;
+
+        case CompanyMenu::Update:
+
+            if (!all.update(ptr))
                 std::cout << "Error: Please wait at least 1 minute before update!\n";
 
             break;
 
-        case 2:
-            std::cout << "Enter window size: ";
-            num = utils::get_valid_number_from_user();
+        case CompanyMenu::Analyze:
+
+            num = ptr->number_of_prices();
+            num = utils::get_number(0, num, ("Enter window size (current maximum '" + std::to_string(num) + "'):"));
+
             try
             {
                 result = ptr->analyze_with_sliding_window(num);
@@ -42,14 +51,14 @@ void run_menu(Companies &all, Company_ptr &ptr)
 
             break;
 
-        case 3:
+        case CompanyMenu::MaxPriceInLastNumMinutes:
 
             std::cout << "Enter minutes: ";
-            num = utils::get_valid_number_from_user();
+            num = utils::get_number(0, 60);
             try
             {
                 size_t price = ptr->max_price_in_last_N_minutes(num);
-                std::cout << "\nMax stock price in last '" << num << "' minutes is: " << price << "\n";
+                std::cout << "Max stock price in last '" << num << "' minutes is: " << price << "\n";
             }
             catch (const std::exception &e)
             {
@@ -58,37 +67,33 @@ void run_menu(Companies &all, Company_ptr &ptr)
 
             break;
 
-        case 4:
+        case CompanyMenu::ClearOld:
             ptr->clean_old();
             std::cout << "Success clean up.\n";
             break;
 
-        case 5:
-            new_name = utils::get_valid_string_from_user("Enter new name:");
-            if (!all.rename_company(ptr, new_name))
-                std::cout << "Error: rename failed.company might not exist.\n ";
+        case CompanyMenu::Rename:
+            new_name = utils::get_string("Enter new name:");
+            if (all.rename_company(ptr, new_name))
+                std::cout <<"Success renaming.";
+            else
+            std::cout << "Error: rename failed.company might not exist!\n ";
             break;
 
-        case 9:
+        case CompanyMenu::ShowMenu:
+
             utils::Company_menu();
             break;
 
             // debuging
-            // case 6:
+            // case 7:
             //     ptr->print_maxe();
             //     break;
-            // case 7:
+            // case 8:
             //     ptr->print_all();
             //     break;
-
-        case 0:
-            std::cout << "Exiting company!\n";
-            break;
-
-        default:
-            std::cout << "Invalid choice!\n";
-            break;
         }
-        std::cout << "To show menu press [9]\n";
+        if (choice == CompanyMenu::Exit)
+            break;
     }
 }

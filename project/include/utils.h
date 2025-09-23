@@ -3,6 +3,7 @@
 // utils.h : Utility helpers for input validation and menus
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 // Maximum buffer size for user input cleanup
 constexpr int INPUT_BUFFER_SIZE = 1000;
@@ -19,8 +20,8 @@ namespace utils
     void Company_menu() noexcept;
 
     // Prompt user with a message, return a valid non-empty string
-    std::string get_valid_string_from_user(const std::string &UI) noexcept;
+    std::string get_string(const std::string &ui) noexcept;
 
     // Prompt user until a valid number is entered
-    size_t get_valid_number_from_user() noexcept;
+    size_t get_number(int min,int max,const std::string&ui="Enter a choice >") noexcept;
 }

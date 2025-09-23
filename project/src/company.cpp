@@ -155,8 +155,8 @@ double Company::compute_median(const std::deque<int> &window) const noexcept
 {
     std::vector<int> sorted_window{window.begin(), window.end()};
     std::sort(sorted_window.begin(), sorted_window.end());
-    size_t n = sorted_window.size();
 
+    size_t n = sorted_window.size();
     if (n % 2 != 0)
         return sorted_window[n / 2];
     else

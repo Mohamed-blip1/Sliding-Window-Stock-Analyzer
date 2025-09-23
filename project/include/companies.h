@@ -52,7 +52,7 @@ public:
     const Company_ptr &enter_company(const std::string &name) const;
 
     // Update a company’s stock price and reorder by last price
-    bool update_order(const Company_ptr &ptr) noexcept;
+    bool update(const Company_ptr &ptr) noexcept;
 
     // Suggest the last updated companies (up to MAX_SUGGESTIONS)
     std::vector<std::string> last_updated_companies_suggestion() const noexcept;

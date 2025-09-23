@@ -24,7 +24,6 @@ namespace utils
         std::cout << std::left << std::setw(space) << "2" << "- Enter company\n";
         std::cout << std::left << std::setw(space) << "3" << "- Companies suggestions\n";
         std::cout << std::left << std::setw(space) << "4" << "- Delete Company\n";
-        std::cout << std::left << std::setw(space) << "9" << "- Menu\n";
         std::cout << std::left << std::setw(space) << "0" << "- Exit\n";
     }
 
@@ -38,16 +37,15 @@ namespace utils
         std::cout << std::left << std::setw(space) << "3" << "- Max price in last N minutes\n";
         std::cout << std::left << std::setw(space) << "4" << "- Clean old prices\n";
         std::cout << std::left << std::setw(space) << "5" << "- Rename a company\n";
-        std::cout << std::left << std::setw(space) << "9" << "- Menu\n";
         std::cout << std::left << std::setw(space) << "0" << "- Exit company\n";
     }
 
-    std::string get_valid_string_from_user(const std::string &UI) noexcept
+    std::string get_string(const std::string &ui) noexcept
     {
         std::string name;
         do
         {
-            std::cout << UI;
+            std::cout << ui;
             std::getline(std::cin, name);
             name = trim(name);
             if (name.empty())
@@ -58,24 +56,31 @@ namespace utils
         return name;
     }
 
-    size_t get_valid_number_from_user() noexcept
+size_t get_number(int min, int max, const std::string &ui) noexcept
     {
         size_t number;
+        std::string num_str;
+
+        if (min > max)
+            std::swap(min, max);
+
         while (true)
         {
-            std::cout << "> ";
-            std::cin >> number;
-            if (std::cin.fail())
+            num_str = get_string(ui);
+
+            if (num_str.empty())
             {
-                std::cin.clear();
-                std::cin.ignore(INPUT_BUFFER_SIZE, '\n');
-                std::cout << "\nPlease Enter A Valid Number: ";
+                std::cout << "Empty Input!\n";
+                continue;
             }
-            else
-            {
-                std::cin.ignore(INPUT_BUFFER_SIZE, '\n');
-                return number;
-            }
+
+            std::istringstream iss(num_str);
+            if (iss >> number && iss.eof())
+                if (number >= min && number <= max)
+                    return number;
+
+            std::cout << "'" << num_str << "' Not valid number\n";
+            continue;
         }
     }
 

@@ -74,6 +74,8 @@ public:
     // Access the last recorded price
     PricePoint &get_last_price() noexcept;
 
+    size_t number_of_prices() const noexcept { return prices_.size(); }
+
 private:
     // Compute median of a window
     double compute_median(const std::deque<int> &window) const noexcept;

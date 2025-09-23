@@ -4,11 +4,22 @@
 //                     then: ./main.exe
 // main.cpp : Entry point for Sliding Window Stock program
 #include <iostream>
+#include "utils.h"
 #include "menu.h"
+#include <vector>
+
+enum class Menu : size_t
+{
+    Exit = 0,
+    AddCompany,
+    EnterCompany,
+    LastUpdatedCompaniesSuggestion,
+    RemoveCompany,
+    ShowMenu
+};
 
 int main()
 {
-    size_t choice = std::numeric_limits<size_t>::max();
     std::vector<std::string> suggestions;
     std::string name;
     Company_ptr ptr;
@@ -18,25 +29,31 @@ int main()
     std::cout << "\n======= Sliding Window Stock Menu =======\n";
     utils::menu();
 
-    while (choice != 0)
+    Menu choice;
+    while (true)
     {
-        choice = utils::get_valid_number_from_user();
+        choice = static_cast<Menu>(utils::get_number(0, 5, "Enter a choice ([5] menu) >"));
         switch (choice)
         {
-        case 1:
-            // Add a company
-            name = utils::get_valid_string_from_user("Enter company name:");
+        case Menu::Exit:
+
+            std::cout << "Exiting program!\n";
+            break;
+
+        case Menu::AddCompany:
+
+            name = utils::get_string("Enter company name: ");
             if (!all.add_company(name))
                 std::cout << "Company already exists!\n";
             else
-                std::cout << "Success.\n";
+                std::cout << "Success adding.\n";
             break;
 
-        case 2:
-            // Enter a specific company
+        case Menu::EnterCompany:
+
             try
             {
-                std::string name = utils::get_valid_string_from_user("Enter company name: ");
+                std::string name = utils::get_string("Enter company name: ");
                 ptr = all.enter_company(name);
             }
             catch (const std::exception &e)
@@ -47,8 +64,8 @@ int main()
             run_menu(all, ptr);
             break;
 
-        case 3:
-            // Show last updated companies
+        case Menu::LastUpdatedCompaniesSuggestion:
+
             suggestions = all.last_updated_companies_suggestion();
             if (suggestions.empty())
             {
@@ -60,29 +77,25 @@ int main()
                 std::cout << std::left << std::setw(2) << index++ << "- " << name << "\n";
             break;
 
-        case 4:
-            // Remove a company
-            name = utils::get_valid_string_from_user("Enter company name:");
+        case Menu::RemoveCompany:
+
+            name = utils::get_string("Enter company name:");
             if (!all.remove_company(name))
                 std::cout << "Company not found!\n";
             else
                 std::cout << "Company deletion successful!\n";
             break;
 
-        case 9:
-            // Print menu again
+        case Menu::ShowMenu:
             utils::menu();
-            break;
-
-        case 0:
-            std::cout << "Exiting program!\n";
             break;
 
         default:
             std::cout << "Invalid choice!\n";
             break;
         }
-        std::cout << "To show menu press [9]\n";
+        if (choice == Menu::Exit)
+            break;
     }
     return 0;
 }
