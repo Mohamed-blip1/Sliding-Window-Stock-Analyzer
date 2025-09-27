@@ -77,7 +77,6 @@ Menu:
 2  - Enter company
 3  - Companies suggestions
 4  - Delete Company
-9  - Menu
 0  - Exit
 >
 ```
