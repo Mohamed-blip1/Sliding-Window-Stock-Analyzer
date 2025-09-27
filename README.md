@@ -62,8 +62,8 @@ make
 g++ -std=c++17 -Iinclude -Isrc src/*.cpp main.cpp -o main.exe
 
 # Run
-./main.exe   # (Linux/macOS)
-main.exe     # (Windows)
+./main       # (Linux/macOS)
+./main.exe   # (Windows)
 ````
 
 ---
